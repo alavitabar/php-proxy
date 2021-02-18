@@ -21,9 +21,32 @@ $ch = curl_init();
 /* If there was a POST request, then forward that as well.*/
 if ($_SERVER['REQUEST_METHOD'] == 'POST')
 {
+
     curl_setopt($ch, CURLOPT_POST, TRUE);
-    curl_setopt($ch, CURLOPT_POSTFIELDS, $_POST);
+    if($_FILES){
+        $header = array('Content-Type: multipart/form-data');
+        curl_setopt($ch, CURLOPT_HTTPHEADER, $header);
+        foreach ($_FILES as $key =>$file) {
+            if (function_exists('curl_file_create')) { // php 5.5+
+                $cFile = curl_file_create($file["tmp_name"], $file["type"],
+                    $key.pathinfo($file, PATHINFO_EXTENSION).'.'. strtolower(explode('.', $file["name"])[1]));
+            } else { //
+                $cFile = '@' . realpath($file["tmp_name"]);
+            }
+            $post = array('file_contents'=> $cFile);
+            $postFields = array_merge($_POST, $post);
+            curl_setopt($ch, CURLOPT_POSTFIELDS, $postFields);
+        }
+    } else {
+        curl_setopt($ch, CURLOPT_POSTFIELDS, $_POST);
+    }
 }
+/*if($_FILES){
+    foreach ($_FILES as $file) {
+        die($file["name"].'-'.$file["size"].'-'.$file["tmp_name"].'-'.$file["type"]);
+    }
+}*/
+
 curl_setopt($ch, CURLOPT_URL, $site . $request);
 curl_setopt($ch, CURLOPT_HEADER, TRUE);
 
