@@ -7,7 +7,7 @@ ini_set('display_errors', '1');
 $logHeaders = FALSE;
 
 /* Site to forward requests to.  */
-$site = 'http://185.113.56.1:8003/';
+$site = 'http://IP/';
 
 /* Domains to use when rewriting some headers. */
 $remoteDomain = 'remotesite.domain.tld';
